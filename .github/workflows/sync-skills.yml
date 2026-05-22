@@ -1,0 +1,37 @@
+name: Sync Skills from Upstream
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Monday 6am UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sync antigravity skills
+        run: |
+          git clone --depth=1 --filter=blob:none --sparse \
+            https://github.com/sickn33/antigravity-awesome-skills.git /tmp/antigravity
+          cd /tmp/antigravity && git sparse-checkout set skills
+          rm -rf $GITHUB_WORKSPACE/skills
+          cp -r /tmp/antigravity/skills $GITHUB_WORKSPACE/skills
+
+      - name: Commit if changed
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add skills/
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: sync skills from antigravity upstream"
+            git push
+          fi

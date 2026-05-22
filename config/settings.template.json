@@ -1,0 +1,39 @@
+{
+  "statusLine": {
+    "type": "command",
+    "command": "bash __CLAUDE_DIR__/statusline-command.sh"
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node __CLAUDE_DIR__/hooks/graphify-tracker.js"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true,
+    "github@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "caveman@caveman": true
+  },
+  "extraKnownMarketplaces": {
+    "caveman": {
+      "source": {
+        "source": "github",
+        "repo": "JuliusBrussee/caveman"
+      }
+    },
+    "antigravity": {
+      "source": {
+        "source": "github",
+        "repo": "sickn33/antigravity-awesome-skills"
+      }
+    }
+  }
+}
