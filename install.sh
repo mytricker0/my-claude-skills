@@ -45,4 +45,15 @@ claude plugin install github@claude-plugins-official --scope user 2>/dev/null ||
 claude plugin install code-review@claude-plugins-official --scope user 2>/dev/null || true
 claude plugin install caveman@caveman --scope user 2>/dev/null || true
 
+# Graphify skill
+if command -v graphify &>/dev/null; then
+  echo "Graphify found — installing skill..."
+  graphify install 2>/dev/null || true
+else
+  echo ""
+  echo "⚠  Graphify not installed. To set it up:"
+  echo "   uv tool install graphifyy   # or: pipx install graphifyy"
+  echo "   graphify install"
+fi
+
 echo "Done. Restart Claude Code."

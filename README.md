@@ -1,8 +1,8 @@
 # my-claude-skills
 
-Portable Claude Code config — plugins, skills, hooks, status line. Clone on any machine and run `./install.sh`.
+Auto-synced Claude Code skills, plugins, hooks, and status line. Clone on any machine and run `./install.sh` to get your full setup.
 
-## Quick setup
+## Quick start
 
 ```bash
 git clone https://github.com/mytricker0/my-claude-skills.git
@@ -12,34 +12,73 @@ chmod +x install.sh
 # Restart Claude Code
 ```
 
-## What's included
+## What gets installed
 
-- **Plugins:** superpowers, caveman, frontend-design, code-review, github
-- **Skills:** synced from `sickn33/antigravity-awesome-skills` (600+ skills in `skills/`)
-- **Hooks:** graphify session tracker (`config/hooks/graphify-tracker.js`)
-- **Status line:** model, context %, rate limits, caveman/graphify badges (`config/statusline-command.sh`)
-- **CLAUDE.md:** global user instructions (`config/CLAUDE.md`)
+### Plugins
+
+| Plugin | Source | What it does |
+|--------|--------|--------------|
+| `superpowers` | claude-plugins-official | Skill invocation system, plan mode, parallel agents |
+| `caveman` | caveman | Terse caveman response mode (`/caveman`) |
+| `frontend-design` | claude-plugins-official | UI/UX design patterns |
+| `code-review` | claude-plugins-official | Inline PR review comments |
+| `github` | claude-plugins-official | GitHub automation |
+
+### Skills
+
+~1455 skills synced weekly from [antigravity-awesome-skills](https://github.com/sickn33/antigravity-awesome-skills) into `skills/`. Covers AI engineering, frontend, backend, DevOps, security, SEO, and more.
+
+### Hooks
+
+| Hook | File | What it does |
+|------|------|--------------|
+| Graphify tracker | `config/hooks/graphify-tracker.js` | Writes flag file when `/graphify` is active — powers the statusline badge |
+
+> **Note:** The graphify hook tracks state but the `/graphify` skill itself (`~/.claude/skills/graphify/SKILL.md`) is not bundled here — create it manually or add it to `skills/graphify/` to include it in the sync.
+
+### Status line
+
+`config/statusline-command.sh` — shows model, context %, rate limits, caveman mode badge, and graphify badge in the Claude Code status bar.
+
+### Config
+
+- `config/CLAUDE.md` → `~/.claude/CLAUDE.md` — global user instructions
+- `config/settings.template.json` → `~/.claude/settings.json` — permissions, hooks, enabled plugins
 
 ## Marketplaces registered
 
-| Name | Repo |
-|------|------|
+| Name | GitHub repo |
+|------|-------------|
 | claude-plugins-official | `anthropics/claude-plugins-official` |
 | antigravity | `sickn33/antigravity-awesome-skills` |
 | caveman | `JuliusBrussee/caveman` |
 
-## Updating skills
+## Keeping skills up to date
 
-GitHub Actions syncs skills every Monday 6am UTC. To sync manually:
+GitHub Actions syncs skills from antigravity every Monday at 6am UTC.
 
-> Actions → **Sync Skills from Upstream** → Run workflow
+Manual sync: **Actions → Sync Skills from Upstream → Run workflow**
 
 ## Adding plugins
 
-Edit `install.sh`, add a line:
+1. Edit `install.sh`, add:
 
 ```bash
 claude plugin install <name>@<marketplace> --scope user 2>/dev/null || true
 ```
 
-Also add to `config/settings.template.json` under `enabledPlugins`.
+2. Add to `config/settings.template.json` under `enabledPlugins`.
+
+## Adding your own skills
+
+Drop a folder into `skills/<skill-name>/` with a `SKILL.md` inside. It will be copied to `~/.claude/skills/` on install.
+
+```
+skills/
+  my-skill/
+    SKILL.md
+```
+
+## Personal / private config
+
+This repo is public — keep personal API keys, custom instructions, or private skills in a separate private repo. See [GitHub docs](https://docs.github.com/en/repositories/creating-and-managing-repositories/about-repositories#about-repository-visibility) — GitHub does not support private branches in public repos.
