@@ -23,6 +23,7 @@ chmod +x install.sh
 | `frontend-design` | claude-plugins-official | UI/UX design patterns |
 | `code-review` | claude-plugins-official | Inline PR review comments |
 | `github` | claude-plugins-official | GitHub automation |
+| `andrej-karpathy-skills` | forrestchang/andrej-karpathy-skills | Karpathy-style AI/ML guidelines |
 
 ### Skills
 
@@ -34,7 +35,11 @@ chmod +x install.sh
 |------|------|--------------|
 | Graphify tracker | `config/hooks/graphify-tracker.js` | Writes flag file when `/graphify` is active — powers the statusline badge |
 
-> **Note:** The graphify hook tracks state but the `/graphify` skill itself (`~/.claude/skills/graphify/SKILL.md`) is not bundled here — create it manually or add it to `skills/graphify/` to include it in the sync.
+> **Graphify setup (manual):** The hook is installed automatically but the skill and CLI must be set up by hand:
+> ```bash
+> uv tool install graphifyy   # or: pipx install graphifyy
+> graphify install
+> ```
 
 ### Status line
 
@@ -52,6 +57,7 @@ chmod +x install.sh
 | claude-plugins-official | `anthropics/claude-plugins-official` |
 | antigravity | `sickn33/antigravity-awesome-skills` |
 | caveman | `JuliusBrussee/caveman` |
+| andrej-karpathy-skills | `forrestchang/andrej-karpathy-skills` |
 
 ## Keeping skills up to date
 

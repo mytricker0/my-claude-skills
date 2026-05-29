@@ -36,6 +36,7 @@ echo "Registering marketplaces..."
 claude plugin marketplace add anthropics/claude-plugins-official --scope user 2>/dev/null || true
 claude plugin marketplace add sickn33/antigravity-awesome-skills --scope user 2>/dev/null || true
 claude plugin marketplace add JuliusBrussee/caveman --scope user 2>/dev/null || true
+claude plugin marketplace add forrestchang/andrej-karpathy-skills --scope user 2>/dev/null || true
 
 # Install plugins
 echo "Installing plugins..."
@@ -44,16 +45,19 @@ claude plugin install frontend-design@claude-plugins-official --scope user 2>/de
 claude plugin install github@claude-plugins-official --scope user 2>/dev/null || true
 claude plugin install code-review@claude-plugins-official --scope user 2>/dev/null || true
 claude plugin install caveman@caveman --scope user 2>/dev/null || true
+claude plugin install andrej-karpathy-skills@karpathy-skills --scope user 2>/dev/null || true
 
-# Graphify skill
-if command -v graphify &>/dev/null; then
-  echo "Graphify found — installing skill..."
-  graphify install 2>/dev/null || true
-else
-  echo ""
-  echo "⚠  Graphify not installed. To set it up:"
-  echo "   uv tool install graphifyy   # or: pipx install graphifyy"
-  echo "   graphify install"
-fi
+# Graphify skill — manual setup required
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "  Graphify — install manually:"
+echo ""
+echo "  1. Install the CLI:"
+echo "     uv tool install graphifyy"
+echo "     # or: pipx install graphifyy"
+echo ""
+echo "  2. Install the Claude Code skill:"
+echo "     graphify install"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 echo "Done. Restart Claude Code."
