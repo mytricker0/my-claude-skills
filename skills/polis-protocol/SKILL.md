@@ -37,7 +37,7 @@ In Antigravity specifically, this turns Manager View's fixed pipeline into a tea
 
 ### Step 1: Found a polis
 
-Clone a reviewed revision of the repo and run the scaffolder directly (review `install.sh` first if you prefer the one-line installer):
+Use a reviewed checkout by default so the scaffolder code is pinned before it writes into the project:
 
 ```bash
 git clone https://github.com/yehudalevy-collab/polis-protocol.git
@@ -49,7 +49,9 @@ python3 scripts/init_polis.py \
   --vendor google --model gemini-3 --tool antigravity
 ```
 
-This writes `_polis/` plus the skill into `.antigravity/skills/`, and bridge pointers (`GEMINI.md`, `AGENTS.md`) that point every tool at `_polis/CONSTITUTION.md`. Tip: add `--dry-run` to preview every file before anything is written.
+If you prefer the published PyPI package, install an exact version after reviewing that release, for example `pipx install polis-protocol==<reviewed-version>`. Do not invoke the package through an unpinned `uvx` or "latest" workflow for automated setup.
+
+This writes `_polis/` plus the skill into `.agents/skills/` (the path Antigravity reads), and bridge pointers (`GEMINI.md`, `AGENTS.md`) that point every tool at `_polis/CONSTITUTION.md`. Tip: add `--dry-run` to preview every file before anything is written; init never overwrites existing files, and `polis init --repair` restores missing ones.
 
 ### Step 2: Register citizens and open contracts
 
@@ -58,15 +60,20 @@ Each agent publishes a capability card under `_polis/citizens/`. Work is opened 
 ### Step 3: Route by track record
 
 ```bash
-python3 polis-protocol/scripts/route_contract.py --polis-root _polis \
+polis route --polis-root _polis \
   --contract _polis/contracts/open/your-task.md --explain
 ```
 
-The router prints a score breakdown (history / self-rating / cost / availability) and recommends the citizen with the strongest record on the task's tags.
+The router prints a score breakdown (history / self-rating / cost / availability / applied lessons) and recommends the citizen with the strongest record on the task's tags. Agents can also reserve files (`polis reserve src/auth --as <citizen>`) so two agents never edit the same path at once — overlapping claims are rejected with the holder named.
 
 ### Step 4: Settle, learn, and amend
 
-A settled contract files a lesson; `--reconcile` folds it into `routing_stats.yml` so the next similar task routes better. When a rule stops working, a citizen proposes an amendment and the others vote.
+```bash
+polis contract settle <contract-id> --quality 5
+polis reconcile --polis-root _polis
+```
+
+A settled contract files a lesson; accepted lessons carry a bounded `routing_effect` the router reads — and names in `--explain` — on the next similar task. Failures become guardrails (`polis guardrail add …`) that future contracts on those tags inherit as must-pass acceptance criteria. When a rule stops working, a citizen proposes an amendment and the others vote. Reproduce the learning claim yourself: `polis bench --mode learning`.
 
 ## Examples
 
