@@ -18,7 +18,7 @@ license_source: "https://github.com/Pazificateur69/tokenleak/blob/main/LICENSE"
 
 ## Overview
 
-Every tool result an agent pulls into context is re-sent on every later call until compaction, so a 6k-token log read early in a 60-call session is paid about 55 more times. These rules make the agent let in only what the next decision needs: locate before reading, compute instead of reading data, bound command output, never re-read, batch independent calls. Over 80 A/B runs in Claude Code (Sonnet 5) they cut cost by 32% with the same 40/40 pass rate; on Haiku 4.5 they only help together with the plugin's read guard (-20%). Method and raw results are in the source repo.
+Every tool result an agent pulls into context is re-sent on every later call until compaction, so a 6k-token log read early in a 60-call session is paid about 55 more times. These rules make the agent let in only what the next decision needs: locate before reading, compute instead of reading data, bound command output, never re-read, batch independent calls. The upstream reports benchmark savings in its source repository; this AAS tree does not bundle those runs. Treat percentages as upstream workload-specific claims, not measured savings in the current task. Billing also depends on actual caching, token accounting and compaction behavior.
 
 ## When to Use This Skill
 
@@ -32,14 +32,14 @@ Every tool result an agent pulls into context is re-sent on every later call unt
 2. **Compute, don't read.** For questions about data (counts, totals, filters, lookups in big data files, CSV, JSON, logs), run a short script or one-liner that prints only the answer. Never pull the data itself into context.
 3. **Bound every command.** Never let tests, builds, installs or logs stream into context unbounded.
    - Quiet or failures-only modes: `pytest -q -x`, `vitest run --reporter=dot`, `go test ./... 2>&1 | grep -v '^ok'`, `cargo test -q`, `npm ci --silent`, `make -s`.
-   - Long jobs: `L="${TMPDIR:-/tmp}/out.log"; cmd > "$L" 2>&1; echo "exit=$?"; tail -n 40 "$L"`. Need more? `grep -n -m 20 -E 'error|FAIL|panic' "$L"` on the saved log. Never re-run a job just to see more of its output.
+   - Long jobs: `L="$(mktemp)" || exit 1; cmd > "$L" 2>&1; echo "exit=$?"; tail -n 40 "$L"`. Need more? `grep -n -m 20 -E 'error|FAIL|panic' "$L"` on the saved log. Never re-run a job just to see more of its output.
    - Iterate on the one failing test, not the whole suite. Run the full suite once at the end, quietly.
 4. **Never re-read what you have.** A file you read or wrote is still in context. Re-read only after compaction or after something else changed it.
 5. **Batch independent calls.** Reads and searches that don't depend on each other go in one turn (parallel tool calls), and shell steps that need no judgment in between go in one command (`wc -l a b; grep -n x a | head`). Each extra round-trip re-sends everything.
 6. **Diffs over files.** `git status -s`, `git diff --stat` then `git diff -- <path>`, `git log --oneline -n 15`, `git show --stat <sha>`.
 7. **Edit, don't rewrite.** Targeted edits only. Never rewrite a whole file to change a few lines, and never paste back into chat code that is already on disk.
 8. **Narrow searches and fetches.** Scope by path and file type, cap results (`-m`, `head_limit`, `| head -n 30`, `-l` for names only). Pick fields from APIs and JSON (`--json a,b`, `jq '.items[] | {id,name}'`, `per_page`). Ask a web fetch a precise question instead of dumping the page.
-9. **Delegate wide exploration.** If an answer means opening 10+ files and you only need the conclusion, hand it to a subagent if your agent has them. Only its summary enters your context.
+9. **Scope wide exploration.** Use available subagents only when delegation is authorized by the user or governing workflow. Otherwise review directly. A summary is not proof that required files or supports were inspected; retain evidence and explicit coverage limits.
 10. **Answer lean.** Lead with the result. No step-by-step recap, no restating the diff, no closing summary of what the user can already see, no filler.
 
 ## Never save tokens by
@@ -68,7 +68,7 @@ sed -n '120,180p' app/service.py
 Bound a noisy build and keep the failure visible:
 
 ```bash
-L="${TMPDIR:-/tmp}/out.log"; npm test > "$L" 2>&1; echo "exit=$?"; tail -n 40 "$L"
+L="$(mktemp)" || exit 1; npm test > "$L" 2>&1; echo "exit=$?"; tail -n 40 "$L"
 grep -n -m 20 -E 'error|FAIL' "$L"
 ```
 

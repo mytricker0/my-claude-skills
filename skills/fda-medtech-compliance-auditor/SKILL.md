@@ -3,7 +3,7 @@ name: fda-medtech-compliance-auditor
 description: "Expert AI auditor for Medical Device (SaMD) compliance, IEC 62304, and 21 CFR Part 820. Reviews DHFs, technical files, and software validation."
 risk: critical
 source: community
-date_added: "2026-09-04"
+date_added: "2026-03-04"
 ---
 
 # FDA MedTech Compliance Auditor
@@ -36,7 +36,7 @@ This skill assists a qualified medical-device quality/regulatory reviewer; it do
 
 ```text
 FDA AUDIT FINDING
-Severity: Major
+Severity: Provisional; qualified reviewer to grade against the audit criteria
 Reference check: determine applicable current QMSR/ISO 13485 CAPA requirements; legacy 820.100(a)(2) is historical, not a current standalone citation
 
 Analysis:
@@ -58,7 +58,7 @@ Required Actions:
 
 - ✅ **Do:** Provide exact wording from SOPs, risk tables, or validation plans for the most accurate review.
 - ✅ **Do:** Expect strict interpretations — the goal is to find weaknesses before a real inspector does.
-- ❌ **Don't:** Forget to link every software defect to a clinical risk item in your ISO 14971 risk file.
+- ✅ **Do:** Assess each software defect for safety impact and document the rationale; link safety-relevant defects to the applicable risk analysis rather than inventing a clinical-risk link for every defect.
 - ❌ **Don't:** Assume "we tested it and it works" satisfies IEC 62304 software verification requirements.
 
 ## Limitations

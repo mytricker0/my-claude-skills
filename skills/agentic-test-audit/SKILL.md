@@ -44,7 +44,7 @@ to run on every change, and which tests cost time without adding detection.
 ### Runner
 
 ```bash
-AV='uvx --from git+https://github.com/timini/agentic-verification@v0.3.0#subdirectory=runner agentic-verification'
+AV='uvx --from git+https://github.com/timini/agentic-verification@07608b3b9e4e359bc0b93b3eca94bb78d67e369e#subdirectory=runner agentic-verification'
 $AV quick|deep <path> [--budget-minutes N]
 $AV prune-check <path> --tests-file <file> --from-run <run-dir>
 $AV replay --run <run-dir> --mutant <id>
@@ -114,7 +114,7 @@ If the run is partial (budget or interruption), say so first and explain which s
 ### Example 1: Quick audit
 
 ```bash
-AV='uvx --from git+https://github.com/timini/agentic-verification@v0.3.0#subdirectory=runner agentic-verification'
+AV='uvx --from git+https://github.com/timini/agentic-verification@07608b3b9e4e359bc0b93b3eca94bb78d67e369e#subdirectory=runner agentic-verification'
 $AV quick . --budget-minutes 5
 ```
 
@@ -141,3 +141,5 @@ $AV prune-check . --tests-file removal.txt --from-run .test-suite-audit/<run-dir
 ## Related Skills
 
 - `@agentic-verify` - check one change by running every mutant of the changed lines.
+
+A temporary copy is not a security sandbox: pytest, fixtures, plugins, conftest and dependency hooks execute code and may access network, credentials and external services. Inspect the pinned runner and target test setup first; use a low-privilege isolated environment with no production credentials and controlled network access. Scope secrets and environment inheritance before running mutation/replay commands. A pin identifies code, not a completed safety review.

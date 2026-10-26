@@ -3,7 +3,7 @@ name: vexor-cli
 description: Semantic file discovery via `vexor`. Use whenever locating where something is implemented/loaded/defined in a medium or large repo, or when the file location is unclear. Prefer this over manual browsing.
 risk: critical
 source: community
-date_added: "2026-09-04"
+date_added: "2026-03-06"
 ---
 ## Supporting material availability
 
@@ -28,12 +28,12 @@ Find files by intent (what they do), not exact text.
 ## Use It Like This
 
 - Use `vexor` first for intent-based file discovery.
-- If `vexor` is missing, follow references/install-vexor.md.
+- If `vexor` is missing, the installation reference is not bundled; obtain the original supporting material or use existing local search tools.
 
 ## Command
 
 ```bash
-vexor "<QUERY>" [--path <ROOT>] [--mode <MODE>] [--ext .py,.md] [--exclude-pattern <PATTERN>] [--top 5] [--format rich|porcelain|porcelain-z]
+vexor search "<QUERY>" [--path <ROOT>] [--mode <MODE>] [--ext .py,.md] [--exclude-pattern <PATTERN>] [--top 5] [--format rich|porcelain|porcelain-z]
 ```
 
 ## Common Flags
@@ -85,10 +85,12 @@ vexor search "config loader" --path . --mode code --ext .py
 
 ```bash
 # Exclude tests and JavaScript files
-vexor search "config loader" --path . --exclude-pattern tests/** --exclude-pattern .js
+vexor search "config loader" --path . --exclude-pattern 'tests/**' --exclude-pattern .js
 ```
 
 ## Tips
+
+- Inspect the configured embedding/index provider before indexing private code. Do not upload repository content without authorization; `--no-cache` does not by itself make an API-backed search local.
 
 - First time search will index files (may take a minute). Subsequent searches are fast. Use longer timeouts if needed.
 - Results return similarity ranking, exact file location, line numbers, and matching snippet preview.

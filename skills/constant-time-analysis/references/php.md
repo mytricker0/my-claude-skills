@@ -1,41 +1,16 @@
 # Constant-Time Analysis: PHP
 
-Analysis guidance for PHP scripts. Uses the VLD extension or OPcache debug output to analyze Zend opcodes.
+Analysis guidance for PHP scripts. Use an existing reviewed VLD extension with target execution disabled to inspect Zend opcodes.
 
 ## Prerequisites
 
-### Installing VLD Extension
+### Existing reviewed VLD installation
 
-The VLD (Vulcan Logic Dumper) extension is required for detailed opcode analysis. OPcache fallback is available but provides less detail.
-
-**Option 1: PECL Install (Recommended)**
-
-```bash
-# Query latest version from PECL
-VLD_VERSION=$(curl -s https://pecl.php.net/package/vld | grep -oP 'vld-\K[0-9.]+(?=\.tgz)' | head -1)
-echo "Latest VLD version: $VLD_VERSION"
-
-# Install via PECL channel URL (avoids version detection issues)
-pecl install channel://pecl.php.net/vld-${VLD_VERSION}
-
-# Or if above fails, install with explicit channel:
-pecl install https://pecl.php.net/get/vld-${VLD_VERSION}.tgz
-```
-
-**Option 2: Build from Source**
-
-```bash
-# Clone and build from GitHub
-git clone https://github.com/derickr/vld.git
-cd vld
-phpize
-./configure
-make
-sudo make install
-
-# Add to php.ini
-echo "extension=vld.so" | sudo tee -a $(php --ini | grep "Loaded Configuration" | cut -d: -f2 | tr -d ' ')
-```
+Require PHP and VLD from an already reviewed, exact toolchain. This guide does not
+authorize installing PECL releases or building a moving Git branch. If VLD is missing,
+stop and arrange a separate setup with immutable sources, dependency review and
+explicit approval. Verify the selected analyzer actually supplies `vld.execute=0`
+and refuses to execute the target if opcode extraction is unavailable.
 
 **Verify Installation**
 
@@ -85,8 +60,7 @@ uv run {baseDir}/ct_analyzer/analyzer.py --json crypto.php
 
 | Function | Issue | Safe Alternative |
 |----------|-------|------------------|
-| `chr()` | Table lookup indexed by secret data | `pack('C', $int)` |
-| `ord()` | Table lookup indexed by secret data | `unpack('C', $char)[1]` |
+| `chr()` / `ord()` | Investigate actual implementation and secret dependence | No generic timing guarantee from `pack`/`unpack` |
 | `bin2hex()` | Table lookups indexed on secret data | Custom constant-time implementation |
 | `hex2bin()` | Table lookups indexed on secret data | Custom constant-time implementation |
 | `base64_encode()` | Table lookups indexed on secret data | Custom constant-time implementation |
@@ -134,15 +108,7 @@ $index = random_int(0, count($array) - 1);
 
 ### Character Operations
 
-```php
-// VULNERABLE: Table lookup timing
-$byte = ord($secret_char);
-$char = chr($secret_byte);
-
-// SAFE: No table lookup
-$byte = unpack('C', $secret_char)[1];
-$char = pack('C', $secret_byte);
-```
+Do not substitute `pack`/`unpack` for `chr`/`ord` and claim constant-time behavior. Review the exact PHP implementation and generated/native operations; the function name alone does not establish a secret-indexed table lookup. Use reviewed native cryptographic primitives rather than custom PHP encoding routines for secret-sensitive operations.
 
 ## Troubleshooting
 
@@ -160,13 +126,8 @@ php -i | grep extension_dir
 ls $(php -r "echo ini_get('extension_dir');") | grep vld
 ```
 
-### OPcache Fallback
+### No OPcache fallback
 
-If VLD is unavailable, the analyzer falls back to OPcache debug output:
-
-```bash
-# Manually test OPcache output
-php -d opcache.enable_cli=1 -d opcache.opt_debug_level=0x10000 crypto.php 2>&1
-```
-
-OPcache provides less detailed output than VLD but still detects division/modulo opcodes.
+Do not run a PHP source file with `opcache.opt_debug_level` as a fallback: it executes
+the target program. If VLD with `vld.execute=0` is unavailable, stop. The analyzer is
+not bundled here; review its implementation and disable any executing fallback before use.
